@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 import time
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -78,9 +79,12 @@ class TitansFinanceCLI:
             logger.info(f"Available services: {', '.join(services.keys())}")
             return False
 
-    def pipeline(self, mode: str = "full") -> bool:
+    def pipeline(self, mode: str = "full", use_airflow: bool = False) -> bool:
         """Run ETL pipeline"""
         logger.info(f"📊 Running {mode} pipeline...")
+
+        if use_airflow:
+            return self._run_airflow_dag("titans_finance_etl_pipeline")
 
         try:
             cmd = ["titans-pipeline", f"--mode={mode}"]
@@ -99,9 +103,12 @@ class TitansFinanceCLI:
             logger.error(f"Pipeline error: {e}")
             return False
 
-    def train(self, model_type: str = "all") -> bool:
+    def train(self, model_type: str = "all", use_airflow: bool = False) -> bool:
         """Train ML models"""
         logger.info(f"🤖 Training {model_type} models...")
+
+        if use_airflow:
+            return self._run_airflow_dag("titans_finance_ml_training_pipeline")
 
         try:
             cmd = ["titans-train", f"--model-type={model_type}"]
@@ -484,6 +491,106 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/titans_finance
         except:
             return False
 
+    def _run_airflow_dag(self, dag_id: str) -> bool:
+        """Trigger Airflow DAG execution"""
+        logger.info(f"🔄 Triggering Airflow DAG: {dag_id}")
+
+        try:
+            import requests
+            import json
+            from base64 import b64encode
+
+            # Airflow API configuration
+            airflow_url = "http://localhost:8081"
+            username = "admin"
+            password = "admin"
+
+            # Create basic auth header
+            credentials = b64encode(f"{username}:{password}".encode()).decode()
+            headers = {
+                "Authorization": f"Basic {credentials}",
+                "Content-Type": "application/json"
+            }
+
+            # Trigger DAG
+            trigger_url = f"{airflow_url}/api/v1/dags/{dag_id}/dagRuns"
+            payload = {
+                "conf": {},
+                "dag_run_id": f"cli_trigger_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            }
+
+            response = requests.post(trigger_url, headers=headers, json=payload, timeout=30)
+
+            if response.status_code == 200:
+                dag_run = response.json()
+                logger.info(f"✅ DAG triggered successfully: {dag_run['dag_run_id']}")
+                logger.info(f"📊 Monitor at: {airflow_url}/dags/{dag_id}/grid")
+                return True
+            else:
+                logger.error(f"❌ Failed to trigger DAG: {response.status_code} - {response.text}")
+                return False
+
+        except ImportError:
+            logger.error("requests library not available for Airflow integration")
+            return False
+        except Exception as e:
+            logger.error(f"Failed to trigger Airflow DAG: {e}")
+            return False
+
+    def airflow_status(self) -> bool:
+        """Check Airflow service status and DAG information"""
+        logger.info("🔍 Checking Airflow status...")
+
+        try:
+            import requests
+            from base64 import b64encode
+
+            # Airflow API configuration
+            airflow_url = "http://localhost:8081"
+            username = "admin"
+            password = "admin"
+
+            # Create basic auth header
+            credentials = b64encode(f"{username}:{password}".encode()).decode()
+            headers = {
+                "Authorization": f"Basic {credentials}",
+                "Content-Type": "application/json"
+            }
+
+            # Check Airflow health
+            health_url = f"{airflow_url}/health"
+            response = requests.get(health_url, timeout=10)
+
+            if response.status_code == 200:
+                logger.info("✅ Airflow is healthy")
+            else:
+                logger.warning(f"⚠️ Airflow health check failed: {response.status_code}")
+
+            # Get DAG information
+            dags_url = f"{airflow_url}/api/v1/dags"
+            response = requests.get(dags_url, headers=headers, timeout=10)
+
+            if response.status_code == 200:
+                dags_data = response.json()
+                titans_dags = [dag for dag in dags_data['dags'] if dag['dag_id'].startswith('titans_finance')]
+
+                logger.info(f"📊 Found {len(titans_dags)} Titans Finance DAGs:")
+                for dag in titans_dags:
+                    status = "🟢 Active" if not dag['is_paused'] else "🟡 Paused"
+                    logger.info(f"  - {dag['dag_id']}: {status}")
+
+                return True
+            else:
+                logger.error(f"❌ Failed to get DAG information: {response.status_code}")
+                return False
+
+        except ImportError:
+            logger.error("requests library not available for Airflow integration")
+            return False
+        except Exception as e:
+            logger.error(f"Failed to check Airflow status: {e}")
+            return False
+
     def _run_command(self, cmd: List[str], cwd: Optional[Path] = None, background: bool = False) -> subprocess.CompletedProcess:
         """Run shell command"""
         if cwd is None:
@@ -561,11 +668,19 @@ Examples:
     pipeline_parser = subparsers.add_parser("pipeline", help="Run ETL pipeline")
     pipeline_parser.add_argument("--mode", choices=["full", "incremental"], default="full",
                                 help="Pipeline execution mode")
+    pipeline_parser.add_argument("--use-airflow", action="store_true",
+                                help="Run pipeline using Airflow orchestration")
 
     # Train command
     train_parser = subparsers.add_parser("train", help="Train ML models")
     train_parser.add_argument("--model-type", default="all",
                              help="Type of model to train")
+    train_parser.add_argument("--use-airflow", action="store_true",
+                             help="Run training using Airflow orchestration")
+
+    # Airflow command
+    airflow_parser = subparsers.add_parser("airflow", help="Airflow operations")
+    airflow_parser.add_argument("action", choices=["status"], help="Airflow action to perform")
 
     # Test command
     test_parser = subparsers.add_parser("test", help="Run tests")
@@ -597,9 +712,15 @@ Examples:
         elif args.command == "dev":
             success = cli.dev(service=args.service)
         elif args.command == "pipeline":
-            success = cli.pipeline(mode=args.mode)
+            success = cli.pipeline(mode=args.mode, use_airflow=args.use_airflow)
         elif args.command == "train":
-            success = cli.train(model_type=args.model_type)
+            success = cli.train(model_type=args.model_type, use_airflow=args.use_airflow)
+        elif args.command == "airflow":
+            if args.action == "status":
+                success = cli.airflow_status()
+            else:
+                logger.error("Unknown airflow action")
+                success = False
         elif args.command == "test":
             success = cli.test(test_type=args.type)
         elif args.command == "lint":

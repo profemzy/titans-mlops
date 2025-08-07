@@ -31,7 +31,7 @@ Titans Finance is a comprehensive, production-ready AI/ML platform for financial
 - **Predictive Analytics**: 4 ML models covering category prediction, amount forecasting, anomaly detection, and cash flow analysis
 - **Real-time API**: FastAPI-based model serving with authentication and rate limiting
 - **Interactive Dashboard**: Streamlit-based visualization and analysis interface
-- **Production Infrastructure**: Docker-based microservices with MLflow, Airflow, and monitoring
+- **Production Infrastructure**: Docker-based microservices with MLflow, Apache Airflow orchestration, and monitoring
 
 ### Technology Stack
 
@@ -40,7 +40,7 @@ Titans Finance is a comprehensive, production-ready AI/ML platform for financial
 - **Databases**: PostgreSQL, Redis
 - **ML/AI**: Scikit-learn, XGBoost, MLflow
 - **APIs**: FastAPI, Pydantic
-- **Orchestration**: Apache Airflow
+- **Orchestration**: Apache Airflow with production DAGs
 - **Containerization**: Docker, Docker Compose
 - **Monitoring**: Prometheus, Grafana, Elasticsearch/Kibana
 - **Frontend**: Streamlit, Plotly
@@ -83,8 +83,8 @@ Titans Finance is a comprehensive, production-ready AI/ML platform for financial
 │                  Data Engineering Layer                     │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐   │
 │  │   Airflow    │  │  ETL Pipeline │  │  Data Quality  │   │
-│  │  Scheduler   │  │  (Extract,    │  │   Validation   │   │
-│  │              │  │  Transform,   │  │                │   │
+│  │  DAGs &      │  │  (Extract,    │  │   Validation   │   │
+│  │  Scheduler   │  │  Transform,   │  │                │   │
 │  │              │  │   Load)       │  │                │   │
 │  └──────────────┘  └──────────────┘  └────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
@@ -248,6 +248,109 @@ CREATE TABLE processed_transactions (
     amount_log FLOAT,
     rolling_avg_7d DECIMAL(12,2),
     rolling_avg_30d DECIMAL(12,2),
+
+### Apache Airflow Orchestration
+
+The project implements comprehensive workflow orchestration using Apache Airflow with two main DAGs for production data processing and ML model training.
+
+#### DAG Architecture
+
+1. **ETL Pipeline DAG** (`titans_finance_etl_pipeline`)
+   - **Schedule**: Daily at midnight
+   - **Purpose**: Complete data processing workflow
+   - **Dependencies**: PostgreSQL database availability
+   - **Retry Logic**: 2 attempts with 5-minute delays
+
+2. **ML Training DAG** (`titans_finance_ml_training_pipeline`)
+   - **Schedule**: Weekly (Sundays at 2 AM)
+   - **Purpose**: Model training and validation
+   - **Dependencies**: Successful ETL completion
+   - **Retry Logic**: 1 attempt with 10-minute delay
+
+#### ETL DAG Tasks Flow
+
+```
+validate_data_source → extract_data → transform_data → load_data → quality_check → create_features
+                                                                      ↓
+                                                               cleanup_temp_files
+                                                                      ↓
+                                                               generate_report → end_pipeline
+```
+
+**Task Details:**
+- **validate_data_source**: Check data availability and format
+- **extract_data**: CSV extraction with quality validation
+- **transform_data**: Feature engineering and data cleaning
+- **load_data**: PostgreSQL warehouse loading
+- **quality_check**: Data quality metrics validation
+- **create_features**: ML-ready feature generation
+- **cleanup_temp_files**: Temporary file cleanup
+- **generate_report**: Comprehensive execution report
+
+#### ML Training DAG Tasks Flow
+
+```
+prepare_training_data → engineer_features → [train_category_model, train_amount_model, 
+                                             train_anomaly_model, train_cashflow_model]
+                                                              ↓
+                                              validate_models → register_models
+                                                              ↓
+                                              cleanup_training_files → generate_training_report → end_training
+```
+
+**Task Details:**
+- **prepare_training_data**: Load and validate training dataset
+- **engineer_features**: Create ML features from processed data
+- **train_*_model**: Parallel model training for each algorithm
+- **validate_models**: Performance validation against thresholds
+- **register_models**: MLflow model registry integration
+- **cleanup_training_files**: Remove temporary training artifacts
+- **generate_training_report**: Training metrics and results
+
+#### CLI Integration
+
+```bash
+# Check Airflow status and DAGs
+python cli.py airflow status
+
+# Run ETL via Airflow
+python cli.py pipeline --use-airflow
+
+# Run ML training via Airflow
+python cli.py train --use-airflow
+
+# Traditional direct execution (fallback)
+python cli.py pipeline
+python cli.py train
+```
+
+#### DAG Configuration
+
+**Error Handling:**
+- Automatic retries with exponential backoff
+- Email notifications on failure
+- Cleanup tasks run even on upstream failures
+- Comprehensive logging and monitoring
+
+**Resource Management:**
+- Maximum 1 active run per DAG
+- Task parallelization where possible
+- Temporary file cleanup
+- Memory-efficient processing
+
+**Monitoring:**
+- Task-level success/failure tracking
+- Performance metrics collection
+- Data quality score monitoring
+- Model performance validation
+
+#### Airflow UI Access
+
+- **URL**: http://localhost:8081
+- **Credentials**: admin/admin
+- **DAG Views**: Grid, Graph, Calendar, Task Duration
+- **Log Access**: Real-time task log streaming
+- **Trigger Manual Runs**: Via UI or CLI integration
     anomaly_score FLOAT,
     -- Metadata
     processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -1097,7 +1200,8 @@ GRAFANA_PORT=3000
 titans-finance/
 ├── data_engineering/       # ETL and data pipelines
 │   ├── etl/               # Extract, Transform, Load
-│   ├── airflow/           # DAGs and orchestration
+│   ├── airflow/           # Apache Airflow orchestration
+│   │   └── dags/          # ETL and ML training DAGs
 │   └── warehouse/         # Database schemas
 ├── data_science/          # ML models and notebooks
 │   ├── models/            # Trained models

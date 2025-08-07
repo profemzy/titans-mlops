@@ -12,7 +12,7 @@
 
 Titans Finance is a comprehensive, production-ready AI/ML platform that demonstrates the complete lifecycle of AI development for financial transaction analysis. The project showcases expertise across four key domains:
 
-- **🔧 Data Engineering**: Enterprise-grade ETL pipelines with comprehensive data quality validation
+- **🔧 Data Engineering**: Enterprise-grade ETL pipelines with Apache Airflow orchestration and comprehensive data quality validation
 - **📊 Data Science**: Advanced ML models for prediction, anomaly detection, and forecasting
 - **🤖 ML Engineering**: Production APIs with real-time feature engineering and model serving
 - **🚀 MLOps**: Complete model lifecycle management with monitoring and automated deployment
@@ -75,11 +75,17 @@ pip install -e .
 # Start database and cache
 docker-compose up -d postgres redis
 
-# Run data pipeline
+# Run data pipeline (traditional)
 python cli.py pipeline
 
-# Train ML models
+# Run data pipeline (with Airflow orchestration)
+python cli.py pipeline --use-airflow
+
+# Train ML models (traditional)
 python cli.py train
+
+# Train ML models (with Airflow orchestration)
+python cli.py train --use-airflow
 ```
 
 ### 3. Launch All Services
@@ -127,7 +133,8 @@ curl -X POST "http://localhost:8000/predict/category" \
 titans-finance/
 ├── 📁 data_engineering/    # ETL pipelines and data processing
 │   ├── etl/               # Extract, Transform, Load modules
-│   ├── airflow/           # DAGs for orchestration
+│   ├── airflow/           # Apache Airflow DAGs for orchestration
+│   │   └── dags/          # ETL and ML training DAGs
 │   └── warehouse/         # Database schemas
 │
 ├── 📁 data_science/        # ML models and analysis
@@ -144,6 +151,7 @@ titans-finance/
 │
 ├── 📁 tests/              # Test suites
 ├── 📁 scripts/            # Utility scripts
+├── 📁 data/               # Sample data and reports
 ├── docker-compose.yml     # Service orchestration
 ├── pyproject.toml        # Project configuration
 └── cli.py                # CLI interface
@@ -210,12 +218,17 @@ python cli.py dev                # Start all services
 python cli.py dev --service api  # Start specific service
 
 # Data Pipeline
-python cli.py pipeline           # Run ETL pipeline
+python cli.py pipeline                    # Run ETL pipeline (traditional)
+python cli.py pipeline --use-airflow      # Run ETL pipeline (with Airflow)
 python cli.py pipeline --mode incremental
 
 # Model Training
-python cli.py train              # Train all models
+python cli.py train                       # Train all models (traditional)
+python cli.py train --use-airflow         # Train all models (with Airflow)
 python cli.py train --model-type category_prediction
+
+# Airflow Operations
+python cli.py airflow status             # Check Airflow and DAG status
 
 # Testing and Quality
 python cli.py test               # Run all tests
@@ -383,21 +396,41 @@ print(response.json())
 
 ```bash
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # Start with specific profiles
-docker-compose --profile monitoring up -d
-docker-compose --profile dashboard up -d
+docker compose --profile monitoring up -d
+docker compose --profile dashboard up -d
+
+# Start core services for Airflow testing
+docker compose up -d postgres redis airflow-init airflow-webserver airflow-scheduler mlflow
+```
+
+### Airflow Integration
+
+```bash
+# Check Airflow status and DAGs
+python cli.py airflow status
+
+# Run ETL pipeline via Airflow
+python cli.py pipeline --use-airflow
+
+# Run ML training via Airflow
+python cli.py train --use-airflow
+
+# Monitor DAG execution at:
+# http://localhost:8081/dags/titans_finance_etl_pipeline/grid
+# http://localhost:8081/dags/titans_finance_ml_training_pipeline/grid
 ```
 
 ### Production Deployment
 
 ```bash
 # Build production images
-docker-compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml build
 
 # Deploy with scaling
-docker-compose -f docker-compose.prod.yml up -d --scale api=3
+docker compose -f docker-compose.prod.yml up -d --scale api=3
 ```
 
 ## Testing
@@ -465,6 +498,7 @@ pre-commit install
 
 ### Phase 1 (Current)
 - ✅ Core ETL pipeline
+- ✅ Apache Airflow orchestration with DAGs
 - ✅ Basic ML models
 - ✅ API implementation
 - ✅ Dashboard
