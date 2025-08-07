@@ -259,7 +259,7 @@ class TitansFinanceCLI:
                     logger.info("🗑️  Removed virtual environment")
 
                 # Clean Docker volumes
-                self._run_command(["docker-compose", "down", "-v"], cwd=self.project_root)
+                self._run_command(["docker", "compose", "down", "-v"], cwd=self.project_root)
                 logger.info("🗑️  Cleaned Docker volumes")
 
             logger.info("✅ Cleanup completed!")
@@ -271,14 +271,18 @@ class TitansFinanceCLI:
 
     def _check_prerequisites(self) -> bool:
         """Check if required tools are available"""
-        required_tools = ["python", "docker", "docker-compose"]
+        checks = [
+            (["python", "--version"], "python"),
+            (["docker", "--version"], "docker"),
+            (["docker", "compose", "version"], "docker compose")
+        ]
 
-        for tool in required_tools:
+        for cmd, name in checks:
             try:
-                subprocess.run([tool, "--version"], capture_output=True, check=True)
-                logger.info(f"✅ {tool}: Available")
+                subprocess.run(cmd, capture_output=True, check=True)
+                logger.info(f"✅ {name}: Available")
             except:
-                logger.error(f"❌ {tool}: Not found")
+                logger.error(f"❌ {name}: Not found")
                 return False
 
         return True
@@ -287,7 +291,7 @@ class TitansFinanceCLI:
         """Setup Python virtual environment"""
         try:
             if self._has_uv() and not use_pip:
-                logger.info("📦 Setting up environment with UV...")
+                logger.info("📦 Setting up environment with uv...")
                 result = self._run_command(["uv", "sync"])
                 return result.returncode == 0
             else:
@@ -311,7 +315,7 @@ class TitansFinanceCLI:
             # First, ensure .env file exists with proper configuration
             if not self._create_env_file():
                 logger.warning(".env file creation failed")
-            
+
             logger.info("🐳 Starting Docker services...")
             result = self._run_command(
                 ["docker", "compose", "up", "-d", "postgres", "redis"],
@@ -329,14 +333,14 @@ class TitansFinanceCLI:
         except Exception as e:
             logger.error(f"Docker setup failed: {e}")
             return False
-    
+
     def _create_env_file(self) -> bool:
         """Create .env file if it doesn't exist"""
         env_file = self.project_root / ".env"
         if env_file.exists():
             logger.info("✅ .env file already exists")
             return True
-        
+
         try:
             # Generate a Fernet key for Airflow
             try:
@@ -345,7 +349,7 @@ class TitansFinanceCLI:
             except ImportError:
                 logger.warning("cryptography not installed, using placeholder Fernet key")
                 fernet_key = "your-fernet-key-here-replace-in-production"
-            
+
             env_content = f"""# Airflow Configuration
 AIRFLOW__CORE__FERNET_KEY={fernet_key}
 
@@ -376,13 +380,13 @@ API_HOST=0.0.0.0
 API_PORT=8000
 DATABASE_URL=postgresql://postgres:password@localhost:5432/titans_finance
 """
-            
+
             with open(env_file, 'w') as f:
                 f.write(env_content)
-            
+
             logger.info("✅ Created .env file with default configuration")
             return True
-        
+
         except Exception as e:
             logger.error(f"Failed to create .env file: {e}")
             return False
@@ -545,7 +549,7 @@ Examples:
 
     # Setup command
     setup_parser = subparsers.add_parser("setup", help="Setup project environment")
-    setup_parser.add_argument("--use-pip", action="store_true", help="Use pip instead of UV")
+    setup_parser.add_argument("--use-pip", action="store_true", help="Use pip instead of uv")
     setup_parser.add_argument("--skip-docker", action="store_true", help="Skip Docker setup")
 
     # Dev command

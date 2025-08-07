@@ -3,19 +3,26 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and uv
 RUN apt-get update && apt-get install -y \
     curl \
     gcc \
     g++ \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir uv
 
-# Copy requirements and install Python dependencies
-COPY ai_engineering/frontend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy project configuration
+COPY pyproject.toml ./
+COPY uv.lock ./
 
-# Copy application files
+# Install Python dependencies with uv (no editable install)
+RUN uv sync --frozen --no-dev --no-install-project
+
+# Copy application files and required modules  
 COPY ai_engineering/frontend/ ./
+COPY ai_engineering/ ./ai_engineering/
+COPY data_science/ ./data_science/
+COPY data_engineering/ ./data_engineering/
 
 # Create data directory
 RUN mkdir -p /app/data
@@ -35,4 +42,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 
 # Run Streamlit
-CMD ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.serverPort=8501"]
+CMD [".venv/bin/streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.serverPort=8501"]

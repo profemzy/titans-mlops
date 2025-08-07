@@ -235,9 +235,25 @@ class ETLPipeline:
             if raw_df is None:
                 return False
 
-            # Keep original raw data for database loading
-            original_raw_df = raw_df.copy()
-            
+            # Normalize column names for raw data before loading
+            raw_df_normalized = raw_df.copy()
+            column_mapping = {
+                'Date': 'date',
+                'Type': 'type',
+                'Description': 'description',
+                'Amount': 'amount',
+                'Category': 'category',
+                'Payment Method': 'payment_method',
+                'Status': 'status',
+                'Reference': 'reference',
+                'Receipt URL': 'receipt_url'
+            }
+            raw_df_normalized = raw_df_normalized.rename(columns=column_mapping)
+
+            # Normalize type values to lowercase to match database constraints
+            if 'type' in raw_df_normalized.columns:
+                raw_df_normalized['type'] = raw_df_normalized['type'].str.lower()
+
             # Transform data
             processed_df = self.transform_data(raw_df)
             if processed_df is None:
@@ -246,8 +262,8 @@ class ETLPipeline:
             # Run quality checks
             quality_report = self.run_quality_checks(processed_df)
 
-            # Load data - pass original raw data, not transformed
-            if not self.load_data(original_raw_df, processed_df):
+            # Load data - pass normalized raw data and processed data
+            if not self.load_data(raw_df_normalized, processed_df):
                 return False
 
             # Save report

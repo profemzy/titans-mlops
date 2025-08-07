@@ -214,8 +214,8 @@ services:
   # FastAPI Application
   api:
     build:
-      context: ./ai_engineering/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ai_engineering/api/Dockerfile
     container_name: titans_api
     depends_on:
       mlflow:

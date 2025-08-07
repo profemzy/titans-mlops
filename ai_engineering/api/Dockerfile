@@ -3,18 +3,26 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and uv
 RUN apt-get update && apt-get install -y \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir uv
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy project configuration
+COPY pyproject.toml ./
+COPY uv.lock ./
 
-# Copy API files
-COPY production_api.py ./
-COPY flexible_api.py ./
+# Install Python dependencies with uv (no editable install)
+RUN uv sync --frozen --no-dev --no-install-project
+
+# Copy API files and required modules
+COPY ai_engineering/api/production_api.py ./
+COPY ai_engineering/api/flexible_api.py ./
+COPY ai_engineering/api/main.py ./
+COPY ai_engineering/ ./ai_engineering/
+COPY data_science/ ./data_science/
+COPY data_engineering/ ./data_engineering/
 
 # Set environment variables
 ENV PYTHONPATH="/app"
@@ -30,4 +38,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl --fail http://localhost:8000/health || exit 1
 
 # Run the flexible API by default
-CMD ["python", "flexible_api.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD [".venv/bin/python", "flexible_api.py", "--host", "0.0.0.0", "--port", "8000"]

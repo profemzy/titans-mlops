@@ -1,5 +1,5 @@
 {
-  "training_date": "2025-08-06T21:08:45.317847",
+  "training_date": "2025-08-07T08:22:05.434254",
   "data_path": "/home/profemzy/projects/titans-finance/data/all_transactions.csv",
   "output_path": "/home/profemzy/projects/titans-finance/data_science/models",
   "mlflow_uri": "http://localhost:5000",
