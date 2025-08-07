@@ -1,0 +1,65 @@
+{
+  "training_date": "2025-08-06T21:08:45.317847",
+  "data_path": "/home/profemzy/projects/titans-finance/data/all_transactions.csv",
+  "output_path": "/home/profemzy/projects/titans-finance/data_science/models",
+  "mlflow_uri": "http://localhost:5000",
+  "results": {
+    "category_prediction": {
+      "model_class": "RandomForestClassifier",
+      "accuracy": 0.15,
+      "training_samples": 80,
+      "test_samples": 20,
+      "categories": [
+        "bad_debts",
+        "computer_equipment",
+        "entertainment",
+        "food",
+        "fuel",
+        "furniture",
+        "hardware",
+        "home_office",
+        "maintenance",
+        "meals_entertainment",
+        "office_supplies",
+        "other",
+        "professional_fees",
+        "rent",
+        "repairs",
+        "software",
+        "supplies",
+        "telephone",
+        "training",
+        "travel",
+        "vehicle",
+        "vehicle_expenses"
+      ]
+    },
+    "amount_prediction": {
+      "model_class": "RandomForestRegressor",
+      "mae": 292.3009775,
+      "r2": 0.6443211233059363,
+      "training_samples": 101,
+      "test_samples": 26
+    },
+    "anomaly_detection": {
+      "model_class": "IsolationForest",
+      "anomaly_rate": 0.10236220472440945,
+      "training_samples": 127,
+      "features": 5
+    },
+    "cashflow_forecasting": {
+      "model_class": "RandomForestRegressor",
+      "mae": 411.00962499999997,
+      "r2": 0.5154398661300947,
+      "training_samples": 92,
+      "test_samples": 24,
+      "forecast_horizon": 30
+    }
+  },
+  "models_trained": [
+    "category_prediction",
+    "amount_prediction",
+    "anomaly_detection",
+    "cashflow_forecasting"
+  ]
+}

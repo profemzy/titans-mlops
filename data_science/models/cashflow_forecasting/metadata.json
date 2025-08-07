@@ -1,0 +1,13 @@
+{
+  "model_type": "cashflow_forecasting",
+  "model_class": "RandomForestRegressor",
+  "version": "1.0.0",
+  "created_at": "2025-08-06T21:08:45.279953",
+  "training_samples": 92,
+  "test_samples": 24,
+  "features": 7,
+  "mae": 411.00962499999997,
+  "r2": 0.5154398661300947,
+  "forecast_horizon": 30,
+  "lookback_window": 7
+}

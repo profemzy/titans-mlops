@@ -1,0 +1,23 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Titans Finance PostgreSQL",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "titans_finance",
+      "Username": "postgres",
+      "Password": "password",
+      "SSLMode": "prefer",
+      "Comment": "Main PostgreSQL database for Titans Finance project",
+      "Shared": false,
+      "DatabaseRestriction": "titans_finance",
+      "PassFile": "",
+      "SSLCert": "",
+      "SSLKey": "",
+      "SSLRootCert": "",
+      "SSLCrl": "",
+      "SSLCompression": 0
+    }
+  }
+}
