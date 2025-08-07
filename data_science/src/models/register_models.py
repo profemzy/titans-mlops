@@ -13,21 +13,20 @@ Usage:
     python register_models.py --model-type=cashflow_forecasting
 """
 
-import os
-import sys
 import argparse
 import json
-import joblib
-from pathlib import Path
 import logging
+import sys
 from datetime import datetime
-from typing import Dict, Any, Optional
+from pathlib import Path
+from typing import Dict
 
+import joblib
 # MLflow imports
 import mlflow
 import mlflow.sklearn
-from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
+from mlflow.tracking import MlflowClient
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent

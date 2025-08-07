@@ -7,19 +7,18 @@ when the Docker environment starts up. It handles both initial registration
 and stage transitions for production deployment.
 """
 
+import logging
 import os
 import sys
 import time
-import logging
-import joblib
-import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict
 
+import joblib
 import mlflow
 import mlflow.sklearn
-from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
+from mlflow.tracking import MlflowClient
 
 # Configure logging
 logging.basicConfig(

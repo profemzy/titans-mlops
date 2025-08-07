@@ -7,17 +7,15 @@ and ensure fair usage across all clients. It supports both Redis-based
 distributed rate limiting and in-memory fallback for development.
 """
 
-import time
-import json
-import asyncio
-from typing import Dict, Optional, Tuple, Any
-from datetime import datetime, timedelta
 import hashlib
+import json
 import logging
+import time
+from typing import Dict, Optional, Tuple
 
+import redis
 from fastapi import Request, Response, HTTPException, status
 from starlette.middleware.base import BaseHTTPMiddleware
-import redis
 
 logger = logging.getLogger(__name__)
 

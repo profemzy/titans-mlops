@@ -11,24 +11,25 @@ Models included:
 - Ensemble methods: Voting and stacking regressors
 """
 
-import pandas as pd
+import warnings
+from datetime import datetime, timedelta
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import tensorflow as tf
+import xgboost as xgb
 from sklearn.ensemble import RandomForestRegressor, VotingRegressor
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import TimeSeriesSplit
-import xgboost as xgb
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout
-from tensorflow.keras.optimizers import Adam
+from sklearn.preprocessing import MinMaxScaler
 from statsmodels.tsa.arima.model import ARIMA
-from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime, timedelta
-import warnings
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
+
 warnings.filterwarnings('ignore')
 
 # Try to import Prophet (optional dependency)

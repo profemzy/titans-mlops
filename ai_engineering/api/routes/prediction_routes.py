@@ -5,28 +5,26 @@ This module contains all API endpoints for ML predictions including
 category prediction, amount prediction, anomaly detection, and cash flow forecasting.
 """
 
-import time
-import asyncio
-from typing import Dict, Any, List
-from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
-from fastapi.security import HTTPAuthorizationCredentials
 import logging
+import time
+from datetime import datetime
+from typing import Dict, Any
 
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
+
+from ..middleware.auth import verify_auth
 # Import our models and services
 from ..models import (
-    TransactionInput, 
+    TransactionInput,
     CashflowForecastInput,
     AnomalyDetectionInput,
     EnhancedCategoryResponse,
     EnhancedAmountResponse,
     EnhancedAnomalyResponse,
     EnhancedCashflowResponse,
-    ValidationErrorResponse,
-    PredictionType
+    ValidationErrorResponse
 )
 from ..services import get_model_service, get_feature_processor
-from ..middleware.auth import verify_auth
 
 logger = logging.getLogger(__name__)
 

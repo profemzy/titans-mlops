@@ -9,23 +9,19 @@ This module provides comprehensive feature selection techniques including:
 - Automated feature selection pipelines
 """
 
-import pandas as pd
+import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.feature_selection import (
     mutual_info_regression, mutual_info_classif,
     f_regression, f_classif, chi2,
-    SelectKBest, SelectPercentile,
     RFE, RFECV
 )
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.linear_model import LassoCV, RidgeCV
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.model_selection import cross_val_score, KFold
-from scipy.stats import pearsonr, spearmanr
-from scipy import stats
-import matplotlib.pyplot as plt
-import seaborn as sns
-import warnings
+
 warnings.filterwarnings('ignore')
 
 

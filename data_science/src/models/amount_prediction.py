@@ -10,24 +10,24 @@ Models included:
 - Time Series: ARIMA, Prophet for temporal forecasting
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
-from sklearn.ensemble import RandomForestRegressor, VotingRegressor
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
-from sklearn.svm import SVR
-from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.pipeline import Pipeline
-import xgboost as xgb
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, LSTM
-from tensorflow.keras.optimizers import Adam
-import matplotlib.pyplot as plt
-import seaborn as sns
-import joblib
 import warnings
+
+import joblib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import xgboost as xgb
+from sklearn.ensemble import RandomForestRegressor, VotingRegressor
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.svm import SVR
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
+
 warnings.filterwarnings('ignore')
 
 

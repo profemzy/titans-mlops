@@ -5,18 +5,19 @@ This module contains API endpoints for model management operations including
 status checks, health monitoring, model reloading, and performance analytics.
 """
 
-import time
-import psutil
-from typing import Dict, Any, List, Optional
-from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from fastapi.security import HTTPAuthorizationCredentials
 import logging
+import time
+from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
 
+import psutil
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+
+from ..middleware.auth import verify_auth
 # Import our models and services
 from ..models import (
     ModelStatusResponse,
-    ModelInfoResponse, 
+    ModelInfoResponse,
     HealthCheckResponse,
     PredictionAnalyticsResponse,
     ModelReloadRequest,
@@ -25,7 +26,6 @@ from ..models import (
     BaseResponse
 )
 from ..services import get_model_service, get_feature_processor
-from ..middleware.auth import verify_auth
 
 logger = logging.getLogger(__name__)
 

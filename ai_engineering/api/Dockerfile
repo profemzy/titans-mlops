@@ -17,7 +17,6 @@ COPY uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy API files and required modules
-COPY ai_engineering/api/production_api.py ./
 COPY ai_engineering/api/flexible_api.py ./
 COPY ai_engineering/api/main.py ./
 COPY ai_engineering/ ./ai_engineering/

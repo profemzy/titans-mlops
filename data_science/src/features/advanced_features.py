@@ -9,14 +9,15 @@ This module provides sophisticated feature engineering techniques including:
 - Domain-specific financial features
 """
 
-import pandas as pd
+import warnings
+
 import numpy as np
-from datetime import datetime, timedelta
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 from scipy import stats
 from scipy.signal import find_peaks
-import warnings
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
 warnings.filterwarnings('ignore')
 
 

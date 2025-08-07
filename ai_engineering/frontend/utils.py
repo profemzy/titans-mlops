@@ -2,11 +2,12 @@
 Utility functions for the Titans Finance Dashboard
 """
 
-import pandas as pd
-import numpy as np
-from typing import Dict, Any, List, Optional
 import logging
 from datetime import datetime, timedelta
+from typing import Dict, Any, List
+
+import numpy as np
+import pandas as pd
 import streamlit as st
 
 logger = logging.getLogger(__name__)

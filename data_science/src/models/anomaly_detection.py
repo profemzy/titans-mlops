@@ -13,24 +13,23 @@ Methods included:
 - Autoencoder-based anomaly detection
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import IsolationForest
-from sklearn.svm import OneClassSVM
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler, RobustScaler
-from sklearn.decomposition import PCA
-from sklearn.metrics import classification_report, confusion_matrix
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Dense, Input
-from tensorflow.keras.optimizers import Adam
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-import joblib
 import warnings
+
+import joblib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+from sklearn.cluster import DBSCAN
+from sklearn.decomposition import PCA
+from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.svm import OneClassSVM
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+
 warnings.filterwarnings('ignore')
 
 

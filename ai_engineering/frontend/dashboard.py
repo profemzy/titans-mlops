@@ -6,22 +6,18 @@ A comprehensive financial dashboard for transaction analysis, ML model predictio
 and financial insights.
 """
 
-import streamlit as st
-import pandas as pd
+import logging
+import os
+from datetime import datetime
+from typing import Dict, Any
+
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import requests
-import json
-from datetime import datetime, timedelta, date
-import logging
-from typing import Dict, Any, List, Optional
-import os
-import asyncpg
-import asyncio
+import streamlit as st
 from sqlalchemy import create_engine
-import redis
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

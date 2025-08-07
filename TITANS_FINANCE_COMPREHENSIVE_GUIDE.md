@@ -439,11 +439,10 @@ Models are evaluated using comprehensive metrics:
 
 ### API Architecture
 
-The ML Engineering layer provides a production-ready API with three implementation variants:
+The ML Engineering layer provides a production-ready API with two implementation variants:
 
-1. **main.py**: Enterprise API with full middleware stack
-2. **production_api.py**: MLflow-integrated production deployment
-3. **flexible_api.py**: Resilient API with fallback mechanisms
+1. **main.py**: Enterprise API with full middleware stack (used by CLI)
+2. **flexible_api.py**: Resilient API with fallback mechanisms (used by Docker)
 
 ### API Endpoints
 

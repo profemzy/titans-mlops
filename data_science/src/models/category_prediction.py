@@ -10,27 +10,28 @@ Models included:
 - NLP: TF-IDF + Classifier, Word embeddings
 """
 
-import pandas as pd
+import warnings
+
+import joblib
+import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+import pandas as pd
+import seaborn as sns
+import tensorflow as tf
+import xgboost as xgb
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-import xgboost as xgb
-import tensorflow as tf
+from sklearn.svm import SVC
+from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, LSTM, Embedding
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import to_categorical
-import matplotlib.pyplot as plt
-import seaborn as sns
-import joblib
-import warnings
+
 warnings.filterwarnings('ignore')
 
 

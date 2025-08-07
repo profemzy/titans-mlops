@@ -7,22 +7,19 @@ from MLflow experiments to the Model Registry and transitioning them through
 different stages (Staging -> Production).
 """
 
-import os
-import sys
-import logging
-import json
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
-from datetime import datetime, timedelta
 import argparse
+import json
+import logging
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Any
 
 import mlflow
 import mlflow.sklearn
 import mlflow.xgboost
-from mlflow.tracking import MlflowClient
 from mlflow.entities import ViewType
-import pandas as pd
-import joblib
+from mlflow.tracking import MlflowClient
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent

@@ -5,11 +5,14 @@ This module contains all Pydantic models for API response formatting,
 extending the base schemas with ML Engineering specific responses.
 """
 
-from typing import List, Dict, Any, Optional, Union
 from datetime import datetime, date
 from enum import Enum
-from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Dict, Any, Optional, Union
+
+from pydantic import Field
+
 from .schemas import BaseResponse, RiskLevel
+
 
 class PredictionStatus(str, Enum):
     """Status of prediction processing"""

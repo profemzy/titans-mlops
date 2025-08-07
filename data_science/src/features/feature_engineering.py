@@ -9,12 +9,13 @@ This module provides comprehensive feature engineering capabilities including:
 - Behavioral and sequential features
 """
 
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
-from sklearn.feature_extraction.text import TfidfVectorizer
 import warnings
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
 warnings.filterwarnings('ignore')
 
 
@@ -552,7 +553,6 @@ class FeatureEngineeringPipeline:
 def main():
     """Example usage of the feature engineering pipeline"""
     # Load data - use absolute path or proper relative path
-    import os
     from pathlib import Path
     
     # Get the project root directory

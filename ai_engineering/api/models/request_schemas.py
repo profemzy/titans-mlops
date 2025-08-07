@@ -5,11 +5,14 @@ This module contains all Pydantic models for API request validation,
 extending the base schemas with ML Engineering specific requirements.
 """
 
-from typing import List, Dict, Any, Optional, Union
-from datetime import datetime, date
+from datetime import datetime
 from enum import Enum
+from typing import List, Dict, Any, Optional, Union
+
 from pydantic import BaseModel, Field, validator, ConfigDict
-from .schemas import TransactionRequest, TransactionType, PaymentMethod, TransactionStatus
+
+from .schemas import TransactionType, PaymentMethod, TransactionStatus
+
 
 class PredictionType(str, Enum):
     """Types of predictions available"""

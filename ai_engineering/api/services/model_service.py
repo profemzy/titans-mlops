@@ -5,23 +5,23 @@ This module provides the core model service that loads trained ML models
 and provides prediction capabilities for the Titans Finance API.
 """
 
+import asyncio
+import json
+import logging
 import os
 import sys
-import joblib
-import json
-import numpy as np
-import pandas as pd
-from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple
-from datetime import datetime, timedelta
-import logging
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, Any, Optional, Tuple
 
+import joblib
 # MLflow for model registry and versioning
 import mlflow
 import mlflow.sklearn
+import numpy as np
+import pandas as pd
 from mlflow.tracking import MlflowClient
 
 # Add project root to path

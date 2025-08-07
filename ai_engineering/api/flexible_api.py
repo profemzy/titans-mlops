@@ -6,25 +6,24 @@ This API can load models either from MLflow Registry or directly from disk,
 making it more resilient to MLflow connectivity issues.
 """
 
+import logging
 import os
 import sys
-import logging
-import json
-import asyncio
-import joblib
 from datetime import datetime
-from typing import Dict, Any, Optional, List
 from pathlib import Path
+from typing import Any, Optional, List
+
+import joblib
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 
-from fastapi import FastAPI, HTTPException, status, Depends, Security
+from fastapi import FastAPI, HTTPException, Depends, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 import uvicorn
 import pandas as pd
 import numpy as np
