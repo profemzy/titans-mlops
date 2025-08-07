@@ -2,6 +2,9 @@
 
 **TL;DR**: Built a complete MLOps learning platform from scratch to understand what it really takes to move ML from notebooks to production. Months of challenging lessons, surprising discoveries, and a financial transaction analysis system that actually works.
 
+![Titans Finance MLOps Platform Overview](images/image1.png)
+*The complete MLOps ecosystem I built - from data pipelines to production APIs*
+
 **Important Note**: My primary focus and area of expertise is **MLOps** - the operational side of machine learning systems. The data engineering, data science, and ML engineering components were explored at a surface level to understand how they integrate with MLOps workflows and create the complete ecosystem. This project served as my hands-on laboratory for understanding end-to-end ML system integration from an operations perspective.
 
 ---
@@ -42,6 +45,9 @@ Building this platform wasn't just about understanding concepts—it was about s
 - **Real-time feature engineering**: Optimizing feature computation for sub-200ms API responses
 
 **The Key Insight**: Each challenge taught me that production ML is 90% engineering problems disguised as ML problems. Now that I've built the foundational understanding of how these systems integrate, my focus shifts to the real prize: **mastering MLOps at depth**.
+
+![System Architecture and Data Flow](images/image2.png)
+*The technical architecture showing how data flows through ETL pipelines, model training, and production APIs*
 
 ## The Learning Journey: 4 Layers of Production ML Reality
 
@@ -221,6 +227,9 @@ class ModelDeploymentManager:
 - **Health monitoring** with comprehensive logging
 
 **Key Learning**: MLOps is 20% ML and 80% Ops - and that's exactly right.
+
+![MLOps Monitoring and Model Lifecycle](images/image3.png)
+*Model lifecycle management with MLflow registry, monitoring dashboards, and deployment automation*
 
 ## The Brutal Truths I Learned (So You Don't Have To)
 
