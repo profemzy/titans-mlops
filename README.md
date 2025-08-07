@@ -82,13 +82,28 @@ python cli.py pipeline
 python cli.py train
 ```
 
-### 3. Launch Applications
+### 3. Launch All Services
 
 ```bash
-# Start API server (http://localhost:8000)
+# Start all services including dashboard
+docker compose up -d
+
+# Services will be available at:
+# - API: http://localhost:8000
+# - Dashboard: http://localhost:8501
+# - MLflow: http://localhost:5000
+# - Jupyter: http://localhost:8888
+# - Airflow: http://localhost:8081
+# - pgAdmin: http://localhost:5050
+```
+
+Or launch individual services:
+
+```bash
+# Start API server only
 python cli.py dev --service api
 
-# Launch dashboard (http://localhost:8501)
+# Start dashboard only  
 python cli.py dev --service dashboard
 ```
 
@@ -97,6 +112,7 @@ python cli.py dev --service dashboard
 ```bash
 curl -X POST "http://localhost:8000/predict/category" \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer dev-api-key-change-in-production" \
   -d '{
     "amount": 150.00,
     "description": "Coffee Shop",
@@ -213,13 +229,29 @@ python cli.py clean --deep       # Deep clean
 
 ## API Examples
 
+### Authentication
+
+All API endpoints require authentication using Bearer tokens. Use one of these development API keys:
+
+- `dev-api-key-change-in-production`
+- `tf_development_key_123`
+- `ml_engineering_key_456`
+
+**⚠️ Note:** Change these keys in production environments.
+
 ### Predict Transaction Category
 
 ```python
 import requests
 
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer dev-api-key-change-in-production"
+}
+
 response = requests.post(
     "http://localhost:8000/predict/category",
+    headers=headers,
     json={
         "amount": 250.00,
         "description": "Restaurant Bill",
@@ -232,11 +264,31 @@ print(response.json())
 # {"prediction": "Food & Dining", "confidence": 0.92}
 ```
 
+```bash
+curl -X POST "http://localhost:8000/predict/category" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer dev-api-key-change-in-production" \
+  -d '{
+    "amount": 250.00,
+    "description": "Restaurant Bill",
+    "payment_method": "credit_card",
+    "date": "2025-01-15"
+  }'
+```
+
 ### Detect Anomalies
 
 ```python
+import requests
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer tf_development_key_123"
+}
+
 response = requests.post(
     "http://localhost:8000/predict/anomaly",
+    headers=headers,
     json={
         "amount": 5000.00,
         "category": "Food & Dining",
@@ -246,6 +298,83 @@ response = requests.post(
 
 print(response.json())
 # {"is_anomaly": true, "risk_level": "high", "score": 0.95}
+```
+
+```bash
+curl -X POST "http://localhost:8000/predict/anomaly" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer tf_development_key_123" \
+  -d '{
+    "amount": 5000.00,
+    "category": "Food & Dining",
+    "date": "2025-01-15"
+  }'
+```
+
+### Predict Transaction Amount
+
+```python
+import requests
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer ml_engineering_key_456"
+}
+
+response = requests.post(
+    "http://localhost:8000/predict/amount",
+    headers=headers,
+    json={
+        "category": "Food & Dining",
+        "description": "Restaurant Bill",
+        "payment_method": "credit_card",
+        "date": "2025-01-15"
+    }
+)
+
+print(response.json())
+# {"predicted_amount": 85.50, "confidence": 0.78}
+```
+
+### Forecast Cash Flow
+
+```python
+import requests
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer dev-api-key-change-in-production"
+}
+
+response = requests.post(
+    "http://localhost:8000/predict/cashflow",
+    headers=headers,
+    json={
+        "days": 30,
+        "historical_data": [
+            {"date": "2025-01-01", "amount": 1500.00},
+            {"date": "2025-01-02", "amount": -250.00},
+            {"date": "2025-01-03", "amount": -75.00}
+        ]
+    }
+)
+
+print(response.json())
+# {"forecast": [{"date": "2025-01-16", "predicted_amount": 125.50}, ...]}
+```
+
+### Health Check (No Authentication Required)
+
+```bash
+curl -X GET "http://localhost:8000/health"
+```
+
+```python
+import requests
+
+response = requests.get("http://localhost:8000/health")
+print(response.json())
+# {"status":"healthy","timestamp":"2025-08-07T15:30:44.064146","models_loaded":4,"models_available":["category","amount","anomaly","cashflow"],"loading_mode":"local_disk"}
 ```
 
 ## Docker Deployment

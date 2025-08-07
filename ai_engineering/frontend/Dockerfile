@@ -18,7 +18,7 @@ COPY uv.lock ./
 # Install Python dependencies with uv (no editable install)
 RUN uv sync --frozen --no-dev --no-install-project
 
-# Copy application files and required modules  
+# Copy application files and required modules
 COPY ai_engineering/frontend/ ./
 COPY ai_engineering/ ./ai_engineering/
 COPY data_science/ ./data_science/
@@ -26,6 +26,8 @@ COPY data_engineering/ ./data_engineering/
 
 # Create data directory
 RUN mkdir -p /app/data
+
+
 
 # Set environment variables
 ENV PYTHONPATH="/app"
@@ -41,5 +43,5 @@ EXPOSE 8501
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 
-# Run Streamlit
-CMD [".venv/bin/streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.serverPort=8501"]
+# Run Streamlit using ENTRYPOINT
+ENTRYPOINT ["/app/.venv/bin/python", "-m", "streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.serverAddress=0.0.0.0", "--browser.serverPort=8501"]
