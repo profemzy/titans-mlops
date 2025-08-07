@@ -1,6 +1,6 @@
 # From Jupyter Chaos to Production-Ready MLOps: My Deep Dive into Titans Finance
 
-**TL;DR**: Built a complete MLOps learning platform from scratch to understand what it really takes to move ML from notebooks to production. Six months of painful lessons, surprising discoveries, and a financial transaction analysis system that actually works.
+**TL;DR**: Built a complete MLOps learning platform from scratch to understand what it really takes to move ML from notebooks to production. Months of challenging lessons, surprising discoveries, and a financial transaction analysis system that actually works.
 
 **Important Note**: My primary focus and area of expertise is **MLOps** - the operational side of machine learning systems. The data engineering, data science, and ML engineering components were explored at a surface level to understand how they integrate with MLOps workflows and create the complete ecosystem. This project served as my hands-on laboratory for understanding end-to-end ML system integration from an operations perspective.
 
